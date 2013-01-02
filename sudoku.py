@@ -17,15 +17,6 @@ table = [row1,row2,row3,row4,row5,row6,row7,row8,row9];
 #def validate(i):
 	#blah
 
-# Show Table (lol does this even need to be a function?)
-def showtable():
-	print '\nCurrent Table (0 denotes empty cell)\n'
-	print row1,'\n',row2,'\n',row3,'\n',row4,'\n',row5,'\n',row6,'\n',row7,'\n',row8,'\n',row9,'\n',	# Print each row on a new line
-
-# Enter/Set a Value (lol does this even need to be a function?)
-def setvalue(r,c,n):
-	table[r-1][c-1] = n
-
 # Comparison routine for values in the same box
 def box(number,r1,r2,c1,c2):
 	for rowx in range(r1,r2):
@@ -97,11 +88,12 @@ def mainmenu():
 		r = int(raw_input('Enter Row Number (1-9): '))		# Row input
 		c = int(raw_input('Enter Column Number (1-9): '))	# Column input
 		n = int(raw_input('Enter Cell Value (1-9): '))		# Cell value input
-		setvalue(r,c,n)
+		table[r-1][c-1] = n
 		print '\n---'
 		mainmenu()
-	elif int(menu) == 2:
-		showtable()			# Display the table
+	elif int(menu) == 2:	# Display the table
+		print '\nCurrent Table (0 denotes empty cell)\n'
+		print row1,'\n',row2,'\n',row3,'\n',row4,'\n',row5,'\n',row6,'\n',row7,'\n',row8,'\n',row9,'\n',	# Print each row on a new line
 		print '\n---'
 		mainmenu()
 	elif int(menu) == 3:
