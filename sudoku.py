@@ -13,9 +13,50 @@ row8 = [z,z,z,z,z,z,z,z,z];
 row9 = [z,z,z,z,z,z,z,z,z];
 table = [row1,row2,row3,row4,row5,row6,row7,row8,row9];
 
-# Validate Input (maybe later)
-#def validate(i):
-	#blah
+def showprettytable():
+	print '\nCurrent Table (- denotes empty cell)\n'
+	#print '\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\n'
+	for i in range(0, 9):
+		if i % 3 == 0:
+			print '\n'
+		for j in range(0, 9):
+			if j % 3 == 0:
+				print '\t',
+			if table[i][j] == 0:
+				print '-',
+			else:
+				print str(table[i][j]),
+		print '\n'
+
+# Show Table (lol does this even need to be a function?)
+def showtable():
+	print '\nCurrent Table (0 denotes empty cell)\n'
+	print row1, '\n', row2, '\n', row3, '\n', row4, '\n', row5, '\n', row6, '\n', row7, '\n', row8, '\n', row9, '\n', # Print each row on a new line
+
+def promptandvalidate(prompt,low,high):
+	result = raw_input(prompt)
+	if result.isdigit():
+		num = int(result)
+		if(num >= low and num <= high):
+			return num
+		else:
+			print 'Invalid input.  Try again.'
+			return promptandvalidate(prompt,low,high)
+	else:
+		print 'Invalid input.  Try again.'
+		return promptandvalidate(prompt,low,high)
+
+def loadtable():
+	line = promptandvalidate('Enter a Puzzle Number (1-1011): ',1,1011)
+	puzzle = ''
+	with open('puzzles.txt', 'r') as f:
+		for num in range(0,line):
+			puzzle = f.readline()
+	# puzzle string now stores our desired table
+	for i in range(0,81):
+		table[i/9][i%9] = int(puzzle[i])
+	# math sure is awesome
+	print 'Puzzle number ' + str(line) + ' now loaded.'
 
 # Comparison routine for values in the same box
 def box(number,r1,r2,c1,c2):
@@ -82,25 +123,28 @@ def solve():
 
 # Main Menu
 def mainmenu():
-	print "\nMain Menu\n","1 - Enter a Value\n","2 - Show Current Table\n","3 - Attempt to Solve\n","4 - Clear Table\n","5 - Exit"
+	print "\nMain Menu\n","1 - Enter a Value\n","2 - Load a Table\n","3 - Show Current Table\n","4 - Attempt to Solve\n","5 - Clear Table\n","6 - Exit"
 	menu = raw_input("Enter your selection: ")
 	if int(menu) == 1:
-		r = int(raw_input('Enter Row Number (1-9): '))		# Row input
-		c = int(raw_input('Enter Column Number (1-9): '))	# Column input
-		n = int(raw_input('Enter Cell Value (1-9): '))		# Cell value input
+		r = promptandvalidate('Enter Row Number (1-9): ',1,9)		# Row input
+		c = promptandvalidate('Enter Column Number (1-9): ',1,9)	# Column input
+		n = promptandvalidate('Enter Cell Value (1-9): ',1,9)	    # Cell value input
 		table[r-1][c-1] = n
 		print '\n---'
 		mainmenu()
-	elif int(menu) == 2:	# Display the table
-		print '\nCurrent Table (0 denotes empty cell)\n'
-		print row1,'\n',row2,'\n',row3,'\n',row4,'\n',row5,'\n',row6,'\n',row7,'\n',row8,'\n',row9,'\n',	# Print each row on a new line
+	elif int(menu) == 2:	# Load a table
+		loadtable()
 		print '\n---'
 		mainmenu()
 	elif int(menu) == 3:
-		solve()
+		showprettytable()			# Display the table
 		print '\n---'
 		mainmenu()
 	elif int(menu) == 4:
+		solve()
+		print '\n---'
+		mainmenu()
+	elif int(menu) == 5:
 		print 'Are you sure? (y/n)'
 		sure = raw_input('> ')
 		if sure == 'y':		# Clears the table by resetting all values to zero
@@ -110,7 +154,7 @@ def mainmenu():
 			print 'Table cleared.'		
 		print '\n---'
 		mainmenu()
-	elif int(menu) == 5:
+	elif int(menu) == 6:
 		sys.exit(0)
 	else:
 		print 'Invalid input. Try again.'
