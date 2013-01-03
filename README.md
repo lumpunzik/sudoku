@@ -5,6 +5,7 @@ This is a small script to solve Sudoku puzzles.  It exists mainly as an experime
 ## Use
 
 Run the sudoku.py script from this project directory and follow the onscreen instructions to load or input a puzzle.
+
 The puzzle can be solved and visualized by following the main menu instructions.
 
 ## Contributing

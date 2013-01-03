@@ -12,8 +12,7 @@ for i in range(0,9):
 	table.append(row)
 
 def showprettytable():
-	print '\nCurrent Table (- denotes empty cell)\n'
-	#print '\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\t-\n'
+	print '\nCurrent Table (dash denotes empty cell)\n'
 	for i in range(0, 9):
 		if i % 3 == 0:
 			print '\n'
@@ -35,7 +34,7 @@ def promptandvalidate(prompt,low,high):
 	result = raw_input(prompt)
 	if result.isdigit():
 		num = int(result)
-		if(num >= low and num <= high):
+		if low <= num <= high:
 			return num
 		else:
 			print 'Invalid input.  Try again.'
@@ -50,6 +49,7 @@ def loadtable():
 	with open('puzzles.txt', 'r') as f:
 		for num in range(0,line):
 			puzzle = f.readline()
+		f.close()
 	# puzzle string now stores our desired table
 	for i in range(0,81):
 		table[i/9][i%9] = int(puzzle[i])
@@ -73,7 +73,7 @@ def solve():
 		for col in range(0,9):		# ...And for every cell in each row (reads the table from left-to-right, top-to-bottom):
 			number = [False,False,False,False,False,False,False,False,False];	# For values 1-9, True indicates that the current cell cannot be that number. Defaults to False for all when moving to a new cell.
 			if table[row][col] == 0:			# If the current cell is blank, run the solving routine, otherwise skip to the next cell.
-				blank = blank + 1
+				blank += 1
 				for rowx in range(0,9):			# Compare values from same row
 					for num in range(1,10):
 						if table[row][rowx] == num:
@@ -105,15 +105,15 @@ def solve():
 						box(number,6,9,6,9)
 				solvable = 0
 				for num in range(0,9):					# Is this cell solvable?
-					if number[num] == False:			# Count the number of possible values for the cell
-						solvable = solvable + 1
+					if not number[num]:			# Count the number of possible values for the cell
+						solvable += 1
 				if solvable == 1:						# If there is only one possible value remaining, solve it.
 					print '\nCell %sx%s is solvable!\nSolved.' % (row,col)	 # FINALLY actually solve here lolololol
 					for num in range(0,9):
-						if number[num] == False:
+						if not number[num]:
 							table[row][col] = num + 1
 				else:									# Otherwise, skip this cell
-					skipped = skipped + 1				# ...And add it to the skip count for this iteration
+					skipped += 1                        # ...And add it to the skip count for this iteration
 	if blank > skipped:		# If at least one initially blank cell becomes filled, this iterates the solver until table is completely solved or requires more cells to be filled manually. 
 		solve()
 	else:					# If no cells were filled, blank == skipped, so there's no use in iteration.
