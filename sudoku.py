@@ -1,17 +1,15 @@
 import sys
 
+z = 0	# Default empty cell value
+
 # Matrix of Sudoku Table
-z = 0	# Default cell value
-row1 = [z,z,z,z,z,z,z,z,z];
-row2 = [z,z,z,z,z,z,z,z,z];
-row3 = [z,z,z,z,z,z,z,z,z];
-row4 = [z,z,z,z,z,z,z,z,z];
-row5 = [z,z,z,z,z,z,z,z,z];
-row6 = [z,z,z,z,z,z,z,z,z];
-row7 = [z,z,z,z,z,z,z,z,z];
-row8 = [z,z,z,z,z,z,z,z,z];
-row9 = [z,z,z,z,z,z,z,z,z];
-table = [row1,row2,row3,row4,row5,row6,row7,row8,row9];
+table = []
+# Populate initially with default values
+for i in range(0,9):
+	row = []
+	for j in range(0,9):
+		row.append(z)
+	table.append(row)
 
 def showprettytable():
 	print '\nCurrent Table (- denotes empty cell)\n'
@@ -22,16 +20,16 @@ def showprettytable():
 		for j in range(0, 9):
 			if j % 3 == 0:
 				print '\t',
-			if table[i][j] == 0:
+			if table[i][j] == z:
 				print '-',
 			else:
 				print str(table[i][j]),
 		print '\n'
 
-# Show Table (lol does this even need to be a function?)
+# Show Table
 def showtable():
 	print '\nCurrent Table (0 denotes empty cell)\n'
-	print row1, '\n', row2, '\n', row3, '\n', row4, '\n', row5, '\n', row6, '\n', row7, '\n', row8, '\n', row9, '\n', # Print each row on a new line
+	print table[0], '\n', table[1], '\n', table[2], '\n', table[3], '\n', table[4], '\n', table[5], '\n', table[6], '\n', table[7], '\n', table[8], '\n', # Print each row on a new line
 
 def promptandvalidate(prompt,low,high):
 	result = raw_input(prompt)
