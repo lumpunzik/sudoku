@@ -117,7 +117,7 @@ def mainmenu():
 		mainmenu()
 	elif int(menu) == 4:
 		iterate = 0		# Attempt to solve the table
-		while iterate < 10:
+		while iterate < 10:	# HARDCODED ITERATION IS TEMPORARY
 			eliminate(table,possible)
 			solve(table,possible)
 			iterate = iterate + 1
