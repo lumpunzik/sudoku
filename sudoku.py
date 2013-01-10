@@ -89,9 +89,6 @@ def solve(table,possible):
 				if possible[i][j].count(False) == 8:
 					table[i][j] = possible[i][j].index(True) + 1
 			# Implicit solve each row	
-				for k in range(0,9):
-					if possible[i][k][j].count(False) == 8:
-						table[i][k]
 			# Implicit solve each column
 			# Implicit solve each box
 	return table, possible
