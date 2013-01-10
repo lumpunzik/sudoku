@@ -40,18 +40,14 @@ def showprettytable():
 		
 # Clear the table by resetting all values to zero
 def cleartable():
-	pass		# Haha jk, don't do anything at all
+	for row in range(0, 9):
+		for col in range(0, 9):
+			table[row][col] = 0
 
 # Show Table
 def showtable():
 	print '\nCurrent Table (0 denotes empty cell)\n'
 	print table[0], '\n', table[1], '\n', table[2], '\n', table[3], '\n', table[4], '\n', table[5], '\n', table[6], '\n', table[7], '\n', table[8], '\n', # Print each row on a new line
-
-# Clear the table
-def cleartable():
-	for row in range(0,9):
-		for col in range(0,9):
-			table[row][col] = 0
 
 def promptandvalidate(prompt,low,high):
 	result = raw_input(prompt)
