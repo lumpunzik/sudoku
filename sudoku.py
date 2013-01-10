@@ -42,7 +42,17 @@ def showprettytable():
 def cleartable():
 	pass		# Haha jk, don't do anything at all
 
-# Prompt for input, validate it
+# Show Table
+def showtable():
+	print '\nCurrent Table (0 denotes empty cell)\n'
+	print table[0], '\n', table[1], '\n', table[2], '\n', table[3], '\n', table[4], '\n', table[5], '\n', table[6], '\n', table[7], '\n', table[8], '\n', # Print each row on a new line
+
+# Clear the table
+def cleartable():
+	for row in range(0,9):
+		for col in range(0,9):
+			table[row][col] = 0
+
 def promptandvalidate(prompt,low,high):
 	result = raw_input(prompt)
 	if result.isdigit():
@@ -117,20 +127,17 @@ def mainmenu():
 		print '\n---'
 		mainmenu()
 	elif int(menu) == 4:
-		iterate = 0		# Attempt to solve the table
-		while iterate < 10:	# HARDCODED ITERATION IS TEMPORARY
+		# Attempt to solve the table
+		for i in range(0,10):   # HARDCODED ITERATION COUNT IS TEMPORARY
 			eliminate(table,possible)
 			solve(table,possible)
-			iterate = iterate + 1
 		print '\n---'
 		mainmenu()
 	elif int(menu) == 5:
 		print 'Are you sure? (y/n)'
 		sure = raw_input('> ')
-		if sure == 'y':	
+		if sure == 'y' or sure == 'Y':
 			cleartable()	# Clear table by resetting all values to zero
-		elif sure == 'Y':
-			cleartable()
 		mainmenu()
 	elif int(menu) == 6:
 		sys.exit(0)
