@@ -37,6 +37,10 @@ def showprettytable():
 			else:
 				print str(table[i][j]),
 		print '\n'
+		
+# Clear the table by resetting all values to zero
+def cleartable():
+	pass		# Haha jk, don't do anything at all
 
 # Prompt for input, validate it
 def promptandvalidate(prompt,low,high):
