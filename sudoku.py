@@ -13,13 +13,13 @@ for i in range(0,9):
 
 # Matrix of possible cell values
 possible = []
-# All default to True, where True denotes that a value is possible, and False == Impossible
+# Fills each cell with integers 1-9 as possibilities
 for i in range(0,9):
 	possrow = []
 	for j in range(0,9):
 		posscell = []
-		for k in range(0,9):
-			posscell.append(True)
+		for k in range(1,10):
+			posscell.append(k)
 		possrow.append(posscell)
 	possible.append(possrow)
 
@@ -32,19 +32,20 @@ def showprettytable():
 		for j in range(0,9):
 			if j % 3 == 0:
 				print '\t',
-			if table[i][j] == z:
+			if table[i][j] == default:
 				print '-',
 			else:
 				print str(table[i][j]),
 		print '\n'
-		
+
 # Clear the table by resetting all values to zero
 def cleartable():
 	for row in range(0,9):
 		for col in range(0,9):
 			table[row][col] = 0
-			for depth in range(0,9):
-				possible[row][col][depth] = True
+			possible[row][col] = []
+			for depth in range(1,10):
+				possible[row][col].append(depth)
 
 def promptandvalidate(prompt,low,high):
 	result = raw_input(prompt)
@@ -78,56 +79,116 @@ def eliminate(table,possible):
 	for i in range(0,9):	# Row
 		for j in range(0,9):	# Column
 			if table[i][j] != 0:	# If the cell is nonzero it must be an integer between 1 and 9, since we have an input validation
-				for k in range(0,9):
-					possible[i][j][k] = False				# All possibilities get set to false, the actual value gets reset to True below
-					possible[i][k][table[i][j] - 1] = False			# Set all cells in the respective row to false for the value
-					possible[k][j][table[i][j] - 1] = False			# Set all cells in the respective column to false for the value
-					for l in range(0 + 3 * (i / 3),3 + 3 * (i / 3)):	# Set all cells in the respective box to false for the value
-						for m in range(0 + 3 * (j / 3),3 + 3 * (j / 3)):
-							possible[l][m][table[i][j] - 1] = False
-				possible[i][j][table[i][j] - 1] = True				# Reset the cell to True for the actual value
+				for k in range(1,10):
+					if possible[i][j].count(k) == 0:
+						pass
+					else:
+						possible[i][j].remove(k)
+					if possible[i][k - 1].count(table[i][j]) == 0:  	# Remove cell value as possibility for the row
+						pass
+					else:
+						possible[i][k - 1].remove(table[i][j])
+					if possible[k - 1][j].count(table[i][j]) == 0:  	# Remove cell value as possibility for the column
+						pass
+					else:
+						possible[k - 1][j].remove(table[i][j])
+				for l in range(3 * (i / 3), 3 + 3 * (i / 3)):			# Remove cell value as possibility for the box
+					for m in range(3 * (j / 3), 3 + 3 * (j / 3)):
+						if possible[l][m].count(table[i][j]) == 0:
+							pass
+						else:
+							possible[l][m].remove(table[i][j])
+				possible[i][j].append(table[i][j])             			# Reset cell's value as its sole possibility
 	return table, possible
 
-# Use boolean values from the possiblities table to solve each cell
+# Debugging function that prints a matrix of all the remaining possibilities in the table
+def printposs(possible):    
+	for i in range(0,9):
+		for j in range(0,9):
+			print possible[i][j]
+		print'\n'
+
+# Solve individual cells if possible
 def solve(table,possible):
 	for i in range(0,9):
 		for j in range(0,9):
 			if table[i][j] == 0:
-				if possible[i][j].count(False) == 8:		# Solve from explicitly eliminated possibilities if possible
-					table[i][j] = possible[i][j].index(True) + 1
-					eliminate(table,possible)
+				listcount = 0
+				for k in range(1,10):
+					listcount = listcount + possible[i][j].count(k)
+				if listcount == 1:								# Solve if only one possibility remains for the cell
+					table[i][j] = possible[i][j].pop()
+					print 'solving cell %sx%s (explicit)' % (i, j)	# For debugging
+					possible[i][j].append(table[i][j])
+					eliminate(table,possible)					# Run the elimination routine whenever a cell is solved
+	for i in range(0,3):										# Solve boxes by counting the number of cells where a value is possible; if there is only one such cell, then the cell must be that value
+		for j in range(0,3):
+			for k in range(1,10):
+				boxcount = 0
+				for l in range(i * 3, 3 + (i * 3)):
+					for m in range(j * 3, 3 + (j * 3)):
+						if possible[l][m].count(k) == 0:
+							pass
+						else:
+							boxcount += 1
+				if boxcount == 1:
+					for l in range(i * 3, 3 + (i * 3)):
+						for m in range(j * 3, 3 + (j * 3)):
+							if possible[l][m].count(k) == 1 and table[l][m] == 0:
+								print 'solving cell %sx%s (implicit box)' % (l, m)	# For debugging
+								table[l][m] = possible[l][m].pop(possible[l][m].index(k))
+								possible[l][m].append(table[l][m])
+								eliminate(table,possible)
+	for i in range(0,9):										# Solve rows the same way as the box solver above
+		for j in range(1,10):
+			rowcount = 0
+			for k in range(0,9):
+				if possible[i][k].count(j) == 0:
+					pass
+				else:
+					rowcount += 1
+			if rowcount == 1:
 				for k in range(0,9):
-					box = [0];				# Create a temporary box data structure to attempt to implicit solve
-					box.remove(0)
-					for l in range(0 + 3 * (i / 3),3 + 3 * (i / 3)):
-						for m in range(0 + 3 * (j / 3),3 + 3 * (j / 3)):
-							box.append(possible[l][m][k])
-					if box.count(False) == 8:
-						n = box.index(True)
-						if n < 3:
-							table[3 * (i / 3)][n + 3 * (j / 3)] = k + 1
-						elif n < 6:
-							table[1 + 3 * (i / 3)][(n % 3) + 3 * (j / 3)] = k + 1
-						elif n < 9:
-							table[2 + 3 * (i / 3)][(n % 3) + 3 * (j / 3)] = k + 1
+					if possible[i][k].count(j) == 1 and table[i][k] == 0:
+						print 'solving cell %sx%s (implicit row)' % (i, k)	# For debugging
+						table[i][k] = possible[i][k].pop(possible[i][k].index(j))
+						possible[i][k].append(table[i][k])
+						eliminate(table,possible)
+	for i in range(0,9):										# Solve columns the same way as the row solver above
+		for j in range(1,10):
+			colcount = 0
+			for k in range(0,9):
+				if possible[k][i].count(j) == 0:
+					pass
+				else:
+					colcount += 1
+			if colcount == 1:
+				for k in range(0,9):
+					if possible[k][i].count(j) == 1 and table[k][i] == 0:
+						print 'solving cell %sx%s (implicit column)' % (i, k)	# For debugging
+						table[k][i] = possible[k][i].pop(possible[k][i].index(j))
+						possible[k][i].append(table[k][i])
 						eliminate(table,possible)
 	return table, possible
 
-# If the solver runs through without changing a value
+# If the solver runs through without changing a value, just in case it might be needed
 def guess(table,possible):
 	pass
 
-# Iterates eliminate, solve, guess method
-def iterate(table,possible):
-	eliminate(table,possible)
-	solve(table,possible)
-	if solved != blank:
-		iterate(table,possible)
-	elif blank == 0:
-		# Table is full, no need to iterate anymore
+# Attempts to solve the table by iterating the eliminate, solve functions
+def attempt(table,possible):
+	count = 0
+	for i in range(0,9):
+		for j in range(0,9):
+			if table[i][j] == 0:
+				count += 1
+	if count > 0:
+		for iterations in range(1,30):		# Run 30 iterations
+			eliminate(table,possible)
+			solve(table,possible)
+			print iterations
 	else:
-		guess(table,possible)
-	
+		print 'The table is filled completely.'
 
 # Main Menu
 def mainmenu():
@@ -141,27 +202,30 @@ def mainmenu():
 		print '\n---'
 		mainmenu()
 	elif int(menu) == 2:		# Load a table
-		cleartable()		# Clears table first, so that the 'possible' matrix is reset
+		cleartable()			# Clears table first, so that the 'possible' matrix is reset
 		loadtable()
 		print '\n---'
 		mainmenu()
 	elif int(menu) == 3:
-		showprettytable()	# Display the table
+		showprettytable()		# Display the table
 		print '\n---'
 		mainmenu()
 	elif int(menu) == 4:
-		eliminate(table,possible)	# Attempt to solve the table
-		solve(table,possible)
+		attempt(table,possible)
+		#printposs(possible)
 		print '\n---'
 		mainmenu()
 	elif int(menu) == 5:
 		print 'Are you sure? (y/n)'
 		sure = raw_input('> ')
 		if sure == 'y' or sure == 'Y':
-			cleartable()	# Clear table by resetting all values to zero
+			cleartable()		# Clear table by resetting all values to zero
 		mainmenu()
 	elif int(menu) == 6:
 		sys.exit(0)
+	elif int(menu) == 7:
+		printposs(possible)
+		mainmenu()
 	else:
 		print 'Invalid input. Try again.'
 		mainmenu()
